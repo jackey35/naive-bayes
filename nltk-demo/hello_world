@@ -1,0 +1,50 @@
+import nltk
+from nltk.text import Text
+import jieba
+import re
+from nltk.text import ContextIndex
+from nltk.tokenize import sent_tokenize,word_tokenize
+
+#nltk.download("punkt")#分词词库，只能英文
+#nltk.download()
+sentence = "i'm jackey,i'm from china tianjin"
+tokens = nltk.word_tokenize(sentence)
+print(tokens)
+
+novel_data = open("three_body.txt",'r', encoding='UTF-8').read()
+#清除无关信息，只保留中文文本
+cleaned_data = ''.join(re.findall(r'[\u4e00-\u9fa5]', novel_data))
+wordlist = jieba.lcut(cleaned_data)
+#初始化三体分词后的词语列表数据为Text类
+text = Text(wordlist)
+
+print(text)
+
+#三体  的上下文，打印宽度20字符，共10行的上下文
+print(text.concordance(word='一',width=20,lines=100))
+
+#word =文明#在word上下文中找到最相似的10个词
+print(text.similar(word='问题',num=10))
+
+#统计词频
+print(text.count(word='成员'))
+
+#初始化三体分词后的词语列表数据为ContentIndex类
+contentindex = ContextIndex(wordlist)
+
+#计算各个词与word的相似度值,返回字典
+
+similarity_scores = contentindex.word_similarity_dict(word='问题')
+
+#保留关联度大于0.02的词语#为了减少打印的词语的数量，我这里选择的阈值为0.02
+for key,value in similarity_scores.items():
+    if value > 0.02:
+        print(key,value)
+
+EXAMPLE_TEXT = "Hello Mr. Smith, how are you doing today? The weather is great, and Python is awesome. The sky is pinkish-blue. You shouldn't eat cardboard."
+
+#按句子分词
+print(sent_tokenize(EXAMPLE_TEXT))
+
+#按单词分词
+print(word_tokenize(EXAMPLE_TEXT))
